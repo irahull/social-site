@@ -1,0 +1,1 @@
+export const OTPEXPIRES = Date.now() + 24 * 60 * 60 * 1000;
