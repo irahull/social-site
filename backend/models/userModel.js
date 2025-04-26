@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const validator = require("validator")
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     profilePicture: { type: String },
-    bio: { type: String},
+    bio: { type: String },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
@@ -52,13 +52,17 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function(next){
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password,10) 
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
   this.confirmPassword = undefined;
-    next()
-  
-})
+  next();
+});
+
+userSchema.methods.comparePassword = async function (password) {
+  console.log(password, "PASS");
+  return await bcrypt.compare(password, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

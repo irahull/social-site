@@ -138,7 +138,7 @@ const resendOtp = async (req, res) => {
   }
 
   const newOtp = generateOtp();
-  const otpExpires = Date.now() + 24 * 60 * 60 * 1000;
+  const otpExpires = Date.now() + 300000;
 
   user.otp = newOtp;
   user.otpExpires = otpExpires;
@@ -169,4 +169,99 @@ const resendOtp = async (req, res) => {
   }
 };
 
-module.exports = { register, verifyOtp, resendOtp };
+// _______________________________ Reset Password with OTP ________________________
+
+const forgetPassword = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ success: false, message: "user not found" });
+  }
+
+  const otp = generateOtp();
+  const resetExpires = Date.now() + 600000;
+
+  user.resetPasswordOTP = otp;
+  user.resetPasswordOTPExpires = resetExpires;
+
+  user.save({ validateBeforeSave: false });
+
+  const htmlTemplate = loadTemplate("otpTemplate.hbs", {
+    title: "Reset Password OTP",
+    username: user.username,
+    otp,
+    message: "Your reset password OTP : ",
+  });
+
+  try {
+    await sendMail({
+      email: user.email,
+      subject: "Reset Password OTP valid for 10 min.",
+      html: htmlTemplate,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Your reset password OTP is sent to your email",
+    });
+  } catch (error) {
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordOTPExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    res.status(400).json({ msg: error.message });
+  }
+};
+
+// _______________________________ Reset Password with OTP ________________________
+
+const resetPassword = async (req, res) => {
+  const { email, otp, password, confirmPassword } = req.body;
+  const user = await User.findOne({
+    email,
+    resetPasswordOTP: otp,
+    resetPasswordOTPExpires: { $gt: Date.now() },
+  });
+  if (!user) {
+    return res.status(400).json({ success: false, message: "Invalid Creadentials" });
+  }
+
+  user.password = password;
+  user.confirmPassword = confirmPassword;
+  user.resetPasswordOTP = undefined;
+  user.resetPasswordOTPExpires = undefined;
+
+  await user.save({ validateBeforeSave: false });
+
+  responseWithTokenAndCookie(user, 200,res, "Password reset Successfully")
+};
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  console.log(email, password);
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ msg: "Fill data" });
+    }
+    const checkUser = await User.findOne({email}).select("+password");
+
+    if (!checkUser) {
+      return res.status(400).json({ msg: "User Not Found" });
+    }
+
+    console.log(checkUser,"USER");
+
+    const checkPass = await checkUser.comparePassword(password)
+
+    if (!checkPass) {
+      return res.status(400).json({ msg: "Incorrect Password" });
+    }
+
+    responseWithTokenAndCookie(checkUser, 200, res, "User Login successfully");
+
+  } catch (error) {
+    console.log(error);
+  }
+
+};
+
+module.exports = { register, verifyOtp, resendOtp, resetPassword, forgetPassword, login };
