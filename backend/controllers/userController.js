@@ -18,11 +18,11 @@ const getProfile = async (req, res) => {
       "-password -confirmPassword -otp -otpExpires -resetPasswordOTP -resetPasswordOTPExpires"
     )
     .populate({
-      path: "posts",
+      path: "post",
       options: { sort: { createdAt: -1 } },
     })
     .populate({
-      path: "savePosts",
+      path: "savedPost",
       options: { sort: { createdAt: -1 } },
     });
 
