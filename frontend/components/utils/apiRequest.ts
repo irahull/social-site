@@ -19,7 +19,9 @@ export const handleAuthRequest = async <T>(
     const axiosError = error as AxiosError<ApiErrorResponse>;
     if (axiosError?.response?.data?.message) {
       toast.error(axiosError?.response?.data?.message);
-    } 
+    }else{
+      toast.error("Something went wrong");
+    }
     return null;
   } finally {
     if (setLoading) setLoading(false);

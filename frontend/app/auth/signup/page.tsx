@@ -10,7 +10,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+// _______________________ Form Schema _____________________________
 const formSchema = z
   .object({
     username: z.string().min(3, "Username is required"),
@@ -23,8 +23,10 @@ const formSchema = z
     message: "Password do not match",
   });
 
+// _______________________ Type Setting _____________________________
 type FormData = z.infer<typeof formSchema>;
 
+// _______________________ Main Signup Component _____________________________
 const SignUp = () => {
   const [isLoading, setisLoading] = useState<boolean>(false);
   const {
@@ -34,6 +36,7 @@ const SignUp = () => {
     reset,
   } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
+  // ______________________ Submitting User Data __________________________ 
   const onSubmit = async (data: FormData) => {
     const signupReq = async () => {
       return await axios.post(
@@ -139,14 +142,14 @@ const SignUp = () => {
                 </p>
               )}
             </div>
+            {/* _________________________ SUBMIT BUTTON ______________________________   */}
             <LoadingButton
               size={"lg"}
               type="submit"
               className="text-center w-full rounded-md mb-4 cursor-pointer"
               isLoading={isLoading}
-              // onClick={handleSubmit}
             >
-              Sign Up Now
+             {isLoading ? "Submitting.." :"Sign Up Now"} 
             </LoadingButton>
             <div className="text-center">
               {" "}
