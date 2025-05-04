@@ -9,7 +9,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantPr
 }
 const LoadingButton = ({isLoading, children , ...props}:Props) => {
   return (
-    <Button disabled={isLoading} {...props}>
+    <Button type='submit' disabled={isLoading} {...props}>
         {isLoading ? <Loader className='animate-spin mr-2 text-3xl'/> : ""}
         {children}
     </Button>

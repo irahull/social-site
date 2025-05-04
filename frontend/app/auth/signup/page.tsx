@@ -1,9 +1,12 @@
 "use client";
 import PasswordInput from "@/components/auth/PasswordInput";
 import LoadingButton from "@/components/helper/LoadingButton";
+import { handleAuthRequest } from "@/components/utils/apiRequest";
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { toast } from "sonner";
 
 interface FormData {
   username: string;
@@ -27,9 +30,21 @@ const SignUp = () => {
     console.log(formData, "FF");
   };
 
-  const handleSubmit = async(e:FormEvent) => {
-    e.preventDefault()
-    
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const signupReq = async () => {
+      return await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/signup`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+    };
+    const result = await handleAuthRequest(signupReq, setisLoading);
+    if (result?.data.status ==="success") {
+      toast(result.data.message)
+    }
   };
 
   return (
@@ -50,7 +65,7 @@ const SignUp = () => {
           </h1>
           <form
             onSubmit={handleSubmit}
-            className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[90%] 2xl:w-[80%] "
+            className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[90%] 2xl:w-[80%]"
           >
             {/* ________________________ USERNAME _______________________________  */}
             <div className="mb-4">
@@ -107,6 +122,7 @@ const SignUp = () => {
               type="submit"
               className="text-center w-full rounded-md mb-4 cursor-pointer"
               isLoading={isLoading}
+              // onClick={handleSubmit}
             >
               Sign Up Now
             </LoadingButton>
