@@ -51,7 +51,7 @@ const register = async (req, res) => {
     const userExist = await User.findOne({ email });
 
     if (userExist) {
-      return res.status(400).json({ msg: "User Already Exits" });
+      return res.status(400).json({ message: "User Already Exits" });
     }
 
     const otp = generateOtp();
@@ -85,14 +85,14 @@ const register = async (req, res) => {
         newUser,
         200,
         res,
-        "User Created Successfully"
+        "User created successfully, Please check your email"
       );
     } catch (error) {
       await User.findByIdAndDelete(newUser._id);
-      res.status(400).json({ msg: error.message });
+      res.status(400).json({ message: error.message });
     }
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ message: error.message });
     console.log(error);
   }
 };
@@ -165,7 +165,7 @@ const resendOtp = async (req, res) => {
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save({ validateBeforeSave: false });
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -208,7 +208,7 @@ const forgetPassword = async (req, res) => {
     user.resetPasswordOTP = undefined;
     user.resetPasswordOTPExpires = undefined;
     await user.save({ validateBeforeSave: false });
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -222,7 +222,9 @@ const resetPassword = async (req, res) => {
     resetPasswordOTPExpires: { $gt: Date.now() },
   });
   if (!user) {
-    return res.status(400).json({ success: false, message: "Invalid Creadentials" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid Creadentials" });
   }
 
   user.password = password;
@@ -232,7 +234,7 @@ const resetPassword = async (req, res) => {
 
   await user.save({ validateBeforeSave: false });
 
-  responseWithTokenAndCookie(user, 200,res, "Password reset Successfully")
+  responseWithTokenAndCookie(user, 200, res, "Password reset Successfully");
 };
 
 const login = async (req, res) => {
@@ -240,28 +242,33 @@ const login = async (req, res) => {
   console.log(email, password);
   try {
     if (!email || !password) {
-      return res.status(400).json({ msg: "Fill data" });
+      return res.status(400).json({ message: "Fill data" });
     }
-    const checkUser = await User.findOne({email}).select("+password");
+    const checkUser = await User.findOne({ email }).select("+password");
 
     if (!checkUser) {
-      return res.status(400).json({ msg: "User Not Found" });
+      return res.status(400).json({ message: "User Not Found" });
     }
 
-    console.log(checkUser,"USER");
+    console.log(checkUser, "USER");
 
-    const checkPass = await checkUser.comparePassword(password)
+    const checkPass = await checkUser.comparePassword(password);
 
     if (!checkPass) {
-      return res.status(400).json({ msg: "Incorrect Password" });
+      return res.status(400).json({ message: "Incorrect Password" });
     }
 
     responseWithTokenAndCookie(checkUser, 200, res, "User Login successfully");
-
   } catch (error) {
     console.log(error);
   }
-
 };
 
-module.exports = { register, verifyOtp, resendOtp, resetPassword, forgetPassword, login };
+module.exports = {
+  register,
+  verifyOtp,
+  resendOtp,
+  resetPassword,
+  forgetPassword,
+  login,
+};

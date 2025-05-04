@@ -12,7 +12,7 @@ const verifyToken = require("../middleware/verifyToken");
 const router = require("express").Router();
 
 // ________________________ AUTH ROUTES __________________________
-router.post("/register", register);
+router.post("/signup", register);
 router.post("/login", login);
 router.post("/verify", verifyToken, verifyOtp);
 router.post("/resend-otp", verifyToken, resendOtp);
