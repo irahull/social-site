@@ -47,6 +47,10 @@ const register = async (req, res) => {
     const { username, email, password, confirmPassword, bio, profilePicture } =
       req.body;
 
+      if (!username || !email || !password || !confirmPassword) {
+        return res.status(400).json({ message: "Fill all the fields properly" });
+      }
+
     //   _______________________Check User Exits_______________________________
     const userExist = await User.findOne({ email });
 

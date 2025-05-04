@@ -13,7 +13,6 @@ export const handleAuthRequest = async <T>(
 
   try {
     const response = await requestCallback();
-    console.log(response, "REPONSE");
     return response;
   } 
   catch (error) {

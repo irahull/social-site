@@ -1,26 +1,25 @@
 "use client";
 import { Eye, EyeOff } from "lucide-react";
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
+import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 interface Props {
-  name: string;
   label?: string;
   placeholder?: string;
-  value?: string;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  registration: UseFormRegisterReturn; // hook-form's register() result
+  error?: FieldError;
   inputClassName?: string;
   labelClassName?: string;
   iconClassName?: string;
 }
 const PasswordInput = ({
-  name,
   label,
   placeholder = "Enter Password",
-  value,
-  onChange,
   inputClassName,
   labelClassName,
   iconClassName,
+  registration,
+  error,
 }: Props) => {
   const [togglePassword, setTogglePassword] = useState<boolean>(false);
   return (
@@ -37,10 +36,10 @@ const PasswordInput = ({
         <input
           type={togglePassword ? "text" : "password"}
           placeholder={placeholder}
-          name={name}
-          value={value}
-          onChange={onChange}
-          className={`px-4 py-3 outline-none bg-gray-200 rounded-md w-full ${inputClassName} `}
+          className={`px-4 py-3 outline-none bg-gray-200 rounded-md w-full ${inputClassName}  ${
+            error ? "border border-red-500" : ""
+          } `}
+          {...registration}
         />
         <button
           type="button"

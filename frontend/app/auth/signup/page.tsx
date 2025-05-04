@@ -1,49 +1,53 @@
 "use client";
+import { z } from "zod";
 import PasswordInput from "@/components/auth/PasswordInput";
 import LoadingButton from "@/components/helper/LoadingButton";
 import { handleAuthRequest } from "@/components/utils/apiRequest";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface FormData {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+const formSchema = z
+  .object({
+    username: z.string().min(3, "Username is required"),
+    email: z.string().email("Email is required"),
+    password: z.string().nonempty("Password is required").min(8, "Password must be at least 8 character"),
+    confirmPassword: z.string().nonempty("Confirm Password is required").min(4, "Please confirm your passord"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Password do not match",
+  });
+
+type FormData = z.infer<typeof formSchema>;
 
 const SignUp = () => {
   const [isLoading, setisLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState<FormData>({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(formData, "FF");
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: FormData) => {
     const signupReq = async () => {
       return await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/signup`,
-        formData,
+        data,
         {
           withCredentials: true,
         }
       );
     };
     const result = await handleAuthRequest(signupReq, setisLoading);
-    if (result?.data.status ==="success") {
-      toast(result.data.message)
+    if (result?.data.status === "success") {
+      toast(result.data.message);
+      reset();
     }
   };
 
@@ -64,7 +68,7 @@ const SignUp = () => {
             Sign Up with <span className="text-rose-600">PhotoFlow</span>
           </h1>
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[90%] 2xl:w-[80%]"
           >
             {/* ________________________ USERNAME _______________________________  */}
@@ -76,11 +80,16 @@ const SignUp = () => {
                 type="text"
                 placeholder="Username"
                 id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="px-4 py-3 outline-none bg-gray-200 rounded-md w-full "
+                {...register("username")}
+                className={`px-4 py-3 outline-none bg-gray-200 rounded-md w-full ${
+                  errors.username ? "border border-red-500" : ""
+                }`}
               />
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.username.message}
+                </p>
+              )}
             </div>
             {/* ________________________ EMAIL _______________________________  */}
             <div className="mb-4">
@@ -91,31 +100,44 @@ const SignUp = () => {
                 type="text"
                 placeholder="Email"
                 id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="px-4 py-3 outline-none bg-gray-200 rounded-md w-full "
+                {...register("email")}
+                className={`px-4 py-3 outline-none bg-gray-200 rounded-md w-full ${
+                  errors.email ? "border border-red-500" : ""
+                } `}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             {/* ________________________ PASSWORD _______________________________  */}
             <div className="mb-4">
               <PasswordInput
-                name="password"
                 label="Password"
                 placeholder="Enter Password"
-                value={formData.password}
-                onChange={handleChange}
+                registration={register("password")}
+                error={errors.password}
               />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             {/* ________________________ CONFIRM PASSWORD _______________________________  */}
             <div className="mb-4">
               <PasswordInput
-                name="confirmPassword"
                 label="Confirm Password"
                 placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                registration={register("confirmPassword")}
+                error={errors.confirmPassword}
               />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
             <LoadingButton
               size={"lg"}
