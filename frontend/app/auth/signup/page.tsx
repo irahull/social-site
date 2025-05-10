@@ -10,12 +10,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useDispatch } from "react-redux";
+import { setAuthUser } from "@/store/authSlice";
 // _______________________ Form Schema _____________________________
 const formSchema = z
   .object({
     username: z.string().min(3, "Username is required"),
     email: z.string().email("Email is required"),
-    password: z.string().nonempty("Password is required").min(8, "Password must be at least 8 character"),
+    password: z.string().nonempty("Password is required").min(6, "Password must be at least 6 character"),
     confirmPassword: z.string().nonempty("Confirm Password is required").min(4, "Please confirm your passord"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -29,6 +31,7 @@ type FormData = z.infer<typeof formSchema>;
 // _______________________ Main Signup Component _____________________________
 const SignUp = () => {
   const [isLoading, setisLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -48,7 +51,9 @@ const SignUp = () => {
       );
     };
     const result = await handleAuthRequest(signupReq, setisLoading);
+    console.log(result?.data.data);
     if (result?.data.status === "success") {
+      dispatch(setAuthUser(result.data.data.user))
       toast(result.data.message);
       reset();
     }

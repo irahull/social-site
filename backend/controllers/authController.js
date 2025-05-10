@@ -262,7 +262,7 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Incorrect Password" });
     }
 
-    responseWithTokenAndCookie(checkUser, 200, res, "User Login successfully");
+    responseWithTokenAndCookie(checkUser, 200, res, "Login successfully");
   } catch (error) {
     console.log(error);
   }
