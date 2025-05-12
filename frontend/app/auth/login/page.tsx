@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "@/store/authSlice";
+import LoginBg from "@/public/images/login.webp"
 // _______________________ Form Schema _____________________________
 const formSchema = z.object({
   email: z.string().email("Email is required"),
@@ -60,11 +61,11 @@ const Login = () => {
       <div className="grid grid-cols-1 lg:grid-cols-7 gap-8">
         <div className="lg:col-span-4 h-screen hidden lg:block">
           <Image
-            src=""
+            src={LoginBg}
             width={1000}
-            height={1000}
+            height={800}
             alt="signup"
-            className="w-full h-full object-cover bg-amber-500"
+            className="w-full h-full object-cover"
           />
         </div>
         <div className="lg:col-span-3 flex w-full h-screen flex-col items-center justify-center">
