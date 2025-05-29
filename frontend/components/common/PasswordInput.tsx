@@ -6,7 +6,7 @@ import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 interface Props {
   label?: string;
   placeholder?: string;
-  registration: UseFormRegisterReturn; // hook-form's register() result
+  registration?: UseFormRegisterReturn; // hook-form's register() result
   error?: FieldError;
   inputClassName?: string;
   labelClassName?: string;
