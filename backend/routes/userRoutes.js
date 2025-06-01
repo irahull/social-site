@@ -20,7 +20,7 @@ router.post("/reset-password", resetPassword);
 router.post("/forget-password", forgetPassword);
 
 // _________________________ USER ROUTES _______________________________
-router.get("/all", verifyToken, getAllUser);
+router.get("/all",  getAllUser);
 router.get("/profile/:id", verifyToken, getProfile);
 
 module.exports = router;

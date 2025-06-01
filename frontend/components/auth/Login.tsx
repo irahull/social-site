@@ -12,7 +12,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "@/store/authSlice";
-import LoginBg from "@/public/images/login.webp"
+import LoginBg from "@/public/images/login.webp";
+import { useRouter } from "next/navigation";
 // _______________________ Form Schema _____________________________
 const formSchema = z.object({
   email: z.string().email("Email is required"),
@@ -29,6 +30,7 @@ type FormData = z.infer<typeof formSchema>;
 const Login = () => {
   const [isLoading, setisLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -48,8 +50,8 @@ const Login = () => {
       );
     };
     const result = await handleRequest(loginReq, setisLoading);
-    console.log(result?.data.data);
     if (result?.data.status === "success") {
+      router.push("/");
       dispatch(setAuthUser(result.data.data.user));
       toast(result.data.message);
       reset();

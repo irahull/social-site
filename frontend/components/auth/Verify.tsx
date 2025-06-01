@@ -19,6 +19,7 @@ import { toast } from "sonner";
 const Verify = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isResendOtp, setIsResendOtp] = useState<boolean>(false);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const inputRef = useRef<Array<HTMLInputElement | null>>([]);
   const user = useSelector((state: RootState) => state?.auth?.user);
@@ -73,6 +74,24 @@ const Verify = () => {
     }
   };
 
+  const handleResendOtp = async () => {
+    const verifyResendOtpReq = async () => {
+      return axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/resend-otp`,
+        { email: user?.email },
+        {
+          withCredentials: true,
+        }
+      );
+    };
+
+    const result = await handleRequest(verifyResendOtpReq, setIsLoading);
+    if (result?.data?.status === "success") {
+      toast(result.data?.message);
+      setIsResendOtp(false)
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       router.replace("/auth/login");
@@ -117,7 +136,13 @@ const Verify = () => {
           </div>
           <div className="flex items-center gap-1 text-gray-800">
             <span>Didt get code? </span>{" "}
-            <span className="underline text-blue-900 cursor-pointer">
+            <span
+              className="underline text-blue-900 cursor-pointer"
+              onClick={() => {
+                handleResendOtp();
+                setIsResendOtp(true);
+              }}
+            >
               {" "}
               Resend Code
             </span>
@@ -126,10 +151,10 @@ const Verify = () => {
             size={"lg"}
             type="submit"
             onClick={verifyOtp}
-            className="text-center w-max text-xl py-6 px-7 rounded-md mt-4 cursor-pointer"
+            className="loading-button"
             isLoading={isLoading}
           >
-            Verify Now
+            { isResendOtp ? "Sending..":"Verify Now"}
           </LoadingButton>
         </div>
       )}

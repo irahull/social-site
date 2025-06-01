@@ -121,6 +121,15 @@
   }
 }
 
+@layer{
+  .input-width{
+    @apply w-[90%] md:w-[50%] mx-auto lg:w-sm px-4 py-2.5
+  }
+  .loading-button{
+    @apply text-center w-max text-xl py-4 lg:py-5.5 px-5 lg:px-7 rounded-sm mt-4 cursor-pointer
+  }
+}
+
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
   -webkit-appearance: none;

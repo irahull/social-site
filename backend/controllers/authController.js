@@ -47,9 +47,9 @@ const register = async (req, res) => {
     const { username, email, password, confirmPassword, bio, profilePicture } =
       req.body;
 
-      if (!username || !email || !password || !confirmPassword) {
-        return res.status(400).json({ message: "Fill all the fields properly" });
-      }
+    if (!username || !email || !password || !confirmPassword) {
+      return res.status(400).json({ message: "Fill all the fields properly" });
+    }
 
     //   _______________________Check User Exits_______________________________
     const userExist = await User.findOne({ email });
@@ -151,7 +151,7 @@ const resendOtp = async (req, res) => {
   const htmlTemplate = loadTemplate("otpTemplate.hbs", {
     title: "OTP Verification",
     username: user.username,
-    newOtp,
+    otp: newOtp,
     message: "Your one time password (OTP) for account verification is : ",
   });
 
@@ -164,7 +164,7 @@ const resendOtp = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "New OTP is sent to your email" });
+      .json({ status: "success", message: "New OTP is sent to your email" });
   } catch (error) {
     user.otp = undefined;
     user.otpExpires = undefined;
@@ -225,6 +225,7 @@ const resetPassword = async (req, res) => {
     resetPasswordOTP: otp,
     resetPasswordOTPExpires: { $gt: Date.now() },
   });
+
   if (!user) {
     return res
       .status(400)
@@ -253,8 +254,6 @@ const login = async (req, res) => {
     if (!checkUser) {
       return res.status(400).json({ message: "User Not Found" });
     }
-
-    console.log(checkUser, "USER");
 
     const checkPass = await checkUser.comparePassword(password);
 
