@@ -24,7 +24,7 @@ const ForgetPassword = () => {
     const forgetPasswordReq = async () => {
       console.log(email);
       return await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/forget-password`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/forget-password`,
         { email },
         {
           withCredentials: true,

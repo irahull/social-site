@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LoadingButton from "../helper/LoadingButton";
-import PasswordInput from "../common/PasswordInput";
+import PasswordInput from "../helper/PasswordInput";
 import { Button } from "../ui/button";
 import axios from "axios";
 import { handleRequest } from "../utils/apiRequest";
@@ -58,7 +58,7 @@ const ResetPassword = () => {
     try {
       const resetPasswordReq = async () => {
         return await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/reset-password`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/reset-password`,
           {
             otp: data.otp,
             password: data.password,

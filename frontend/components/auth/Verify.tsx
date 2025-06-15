@@ -77,7 +77,7 @@ const Verify = () => {
   const handleResendOtp = async () => {
     const verifyResendOtpReq = async () => {
       return axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/resend-otp`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/resend-otp`,
         { email: user?.email },
         {
           withCredentials: true,

@@ -1,6 +1,6 @@
 "use client";
 import { z } from "zod";
-import PasswordInput from "@/components/common/PasswordInput";
+import PasswordInput from "@/components/helper/PasswordInput";
 import LoadingButton from "@/components/helper/LoadingButton";
 import { handleRequest } from "@/components/utils/apiRequest";
 import axios from "axios";
@@ -42,7 +42,7 @@ const Login = () => {
   const onSubmit = async (data: FormData) => {
     const loginReq = async () => {
       return await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/login`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
         data,
         {
           withCredentials: true,

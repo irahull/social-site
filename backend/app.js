@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize')
 const path = require("path")
 const dbConnection = require('./database/dbConnection')
 const userRoutes = require("./routes/userRoutes")
+const authRoutes = require("./routes/authRoutes")
 
 const app = express()
 
@@ -31,6 +32,7 @@ if (process.env.NODE_ENV === "development") {
 // app.use(mongoSanitize())
 
 // _______________________ API ROUTES ____________________ 
+app.use("/api/auth", authRoutes)
 app.use("/api/user", userRoutes)
 
 module.exports=app
